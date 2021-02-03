@@ -22,31 +22,31 @@ public class ExampleScenarioTest {
 
 	private WebDriver driver;
 	private WebDriverWait wait;
-	
-	
+
+
 	@Before
 	public void before() {
-		
+
 		System.setProperty("webdriver.chrome.driver", "webdriver/chromedriver.exe");
-		
+
 		ChromeOptions options = new ChromeOptions();
 		options = new ChromeOptions();
-	    options.addArguments("--disable-notifications");
-		
+		options.addArguments("--disable-notifications");
+
 		driver = new ChromeDriver(options);
-	    driver.manage().window().maximize();
-	    driver.manage().timeouts().pageLoadTimeout(50, TimeUnit.SECONDS);
-	    driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-	    
-	    wait = new WebDriverWait(driver, 10, 1000);
-		
+		driver.manage().window().maximize();
+		driver.manage().timeouts().pageLoadTimeout(50, TimeUnit.SECONDS);
+		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+
+		wait = new WebDriverWait(driver, 10, 1000);
+
 		String baseUrl = "https://www.rgs.ru";
 		driver.get(baseUrl);
-		
+
 		new WebDriverWait(driver, 1).until(webDriver -> ((JavascriptExecutor) webDriver)
-			.executeScript("return document.readyState").equals("complete"));
+				.executeScript("return document.readyState").equals("complete"));
 	}
-	
+
 	@Test
 	public void exampleScenario() throws InterruptedException {
 		//выбрать меню.
@@ -54,24 +54,24 @@ public class ExampleScenarioTest {
 		List<WebElement> menuButtonList = driver.findElements(By.xpath(menuButtonXPath));
 		if(!menuButtonList.isEmpty())
 			menuButtonList.get(0).click();
-		
+
 		//выбрать пункт - Компаниям
 		String companyButtonXPath = "//a[contains(text(), 'Компаниям')]";
 		WebElement companyButton = driver.findElement(By.xpath(companyButtonXPath));
 		companyButton.click();
-		
+
 		//выбрать пункт - Здоровье
 		String healthButtonXPath = "//a[@class='list-group-item adv-analytics-navigation-line4-link' and contains(text(), 'Здоровье')]";
 		WebElement healthButton = driver.findElement(By.xpath(healthButtonXPath));
 		waitUtilElementToBeClickable(healthButton);
 		healthButton.click();
-		
+
 		//выбрать пунк - добровольное медицинское страхование
 		String dmsButtonXPath = "//a[contains(text(), 'Добровольное медицинское')]";
 		WebElement dmsButton = driver.findElement(By.xpath(dmsButtonXPath));
 		waitUtilElementToBeClickable(dmsButton);
 		dmsButton.click();
-		
+
 		//проверка заголовка - добровольное медицинское страхование
 		String dmsTitleXPath = "//a[contains(text(), 'Добровольное медицинское')]";
 		waitUtilElementToBeVisible(By.xpath(dmsTitleXPath));
@@ -83,75 +83,76 @@ public class ExampleScenarioTest {
 		WebElement sendButton = driver.findElement(By.xpath(sendButtonXPath));
 		waitUtilElementToBeClickable(sendButton);
 		sendButton.click();
-		
+
 		//проверка открытия заявки на добровольное медицинское страхование
 		String applicationTitleXPath = "//b";
 		waitUtilElementToBeVisible(By.xpath(applicationTitleXPath));
 		WebElement applicationTitle = driver.findElement(By.xpath(applicationTitleXPath));
 		Assert.assertEquals("Заголовок отсутствует/не соответствует требуемому",
 				"Заявка на добровольное медицинское страхование", applicationTitle.getText());
-	
-		// заполнить поля данными
-        fillInputField(driver.findElement(By.xpath("//*[contains(@name, 'LastName')]")), "Васильев");
-        fillInputField(driver.findElement(By.xpath("//*[contains(@name, 'FirstName')]")), "Иван");
-        fillInputField(driver.findElement(By.xpath("//*[contains(@name, 'MiddleName')]")), "Александрович");
-        Select dprCountry = new Select(driver.findElement(By.xpath("//*[contains(@name,'Region')]")));
-        dprCountry.selectByVisibleText("Москва");
-        fillInputField(driver.findElement(By.xpath("//*[contains(text(),'Телефон')]/../child::input")), "+7 (779) 167-62-71");
-        fillInputField(driver.findElement(By.xpath("//*[contains(@name, 'Email')]")), "qwertyqwerty");
-        fillInputField(driver.findElement(By.xpath("//*[contains(@name,'ContactDate')]")), "05.02.1987" + "\n");
-        fillInputField(driver.findElement(By.xpath("//*[contains(@name,'Comment')]")), "Я согласен на обработку");
 
-        
-        //клик по галочке
+		// заполнить поля данными
+		String fieldXPath = "//*[@name='%s']";
+		fillInputField(driver.findElement(By.xpath(String.format(fieldXPath, "LastName"))), "Васильев");
+		fillInputField(driver.findElement(By.xpath(String.format(fieldXPath, "FirstName"))), "Иван");
+		fillInputField(driver.findElement(By.xpath(String.format(fieldXPath, "MiddleName"))), "Александрович");
+		Select dprCountry = new Select(driver.findElement(By.xpath("//*[contains(@name,'Region')]")));
+		dprCountry.selectByVisibleText("Москва");
+		fillInputField(driver.findElement(By.xpath("//*[contains(text(),'Телефон')]/../child::input")), "+7 (779) 167-62-71");
+		fillInputField(driver.findElement(By.xpath(String.format(fieldXPath, "Email"))), "qwertyqwerty");
+		fillInputField(driver.findElement(By.xpath(String.format(fieldXPath, "ContactDate"))), "05.02.1987" + "\n");
+		fillInputField(driver.findElement(By.xpath(String.format(fieldXPath, "Comment"))), "Я согласен на обработку");
+
+
+		//клик по галочке
 		String personalDataButtonXPath = "//*[contains(@type,'checkbox')]/../child::label[contains(text(),'Я согласен')]";
 		WebElement personalDataButton = driver.findElement(By.xpath(personalDataButtonXPath));
-        waitUtilElementToBeClickable(personalDataButton);
-        personalDataButton.click();
-		
-        
-        //клик отправить
-        String sendButtonXPath1 = "//button[contains(text(),'Отправить')]";
+		waitUtilElementToBeClickable(personalDataButton);
+		personalDataButton.click();
+
+
+		//клик отправить
+		String sendButtonXPath1 = "//button[contains(text(),'Отправить')]";
 		WebElement sendButton1 = driver.findElement(By.xpath(sendButtonXPath1));
-        waitUtilElementToBeClickable(sendButton1);
-        sendButton1.click();
-	
-        //проверка email
-        String errorEmailXPath = "//span[@class='validation-error-text']";
-        WebElement errorEmail = driver.findElement(By.xpath(errorEmailXPath));
-        waitUtilElementToBeVisible(errorEmail);
-        Assert.assertEquals("Проверка ошибки у validation на странице не была пройдена",
-        		"Введите адрес электронной почты", errorEmail.getText());
+		waitUtilElementToBeClickable(sendButton1);
+		sendButton1.click();
+
+		//проверка email
+		String errorEmailXPath = "//span[@class='validation-error-text']";
+		WebElement errorEmail = driver.findElement(By.xpath(errorEmailXPath));
+		waitUtilElementToBeVisible(errorEmail);
+		Assert.assertEquals("Проверка ошибки у validation на странице не была пройдена",
+				"Введите адрес электронной почты", errorEmail.getText());
 	}
-	
-	 @After
-	 
-	 public void after(){
-	        driver.quit();
-	    }
 
-	    private void scrollToElementJs(WebElement element) {
-	        JavascriptExecutor javascriptExecutor = (JavascriptExecutor) driver;
-	        javascriptExecutor.executeScript("arguments[0].scrollIntoView(true);", element);
-	    }
+	@After
 
-	    private void waitUtilElementToBeClickable(WebElement element) {
-	        wait.until(ExpectedConditions.elementToBeClickable(element));
-	    }
+	public void after(){
+		driver.quit();
+	}
 
-	    private void waitUtilElementToBeVisible(By locator) {
-	        wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
-	    }
+	private void scrollToElementJs(WebElement element) {
+		JavascriptExecutor javascriptExecutor = (JavascriptExecutor) driver;
+		javascriptExecutor.executeScript("arguments[0].scrollIntoView(true);", element);
+	}
 
-	    private void waitUtilElementToBeVisible(WebElement element) {
-	        wait.until(ExpectedConditions.visibilityOf(element));
-	    }
+	private void waitUtilElementToBeClickable(WebElement element) {
+		wait.until(ExpectedConditions.elementToBeClickable(element));
+	}
 
-	    private void fillInputField(WebElement element, String value) {
-	        scrollToElementJs(element);
-	        waitUtilElementToBeClickable(element);
-	        element.click();
-	        element.sendKeys(value);
-	    }
+	private void waitUtilElementToBeVisible(By locator) {
+		wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
+	}
+
+	private void waitUtilElementToBeVisible(WebElement element) {
+		wait.until(ExpectedConditions.visibilityOf(element));
+	}
+
+	private void fillInputField(WebElement element, String value) {
+		scrollToElementJs(element);
+		waitUtilElementToBeClickable(element);
+		element.click();
+		element.sendKeys(value);
+	}
 
 }
